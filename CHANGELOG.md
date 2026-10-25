@@ -1,6 +1,6 @@
-## 1.0.0-beta.1
+## 1.0.0
 
-First release, for Steam build 199049 (patch 1.2). **Beta:** tested by loading into the real game with every patch checked, not yet in a full mission.
+First release, for Steam build 199049 (patch 1.2). Tested in real play on a Steam Machine.
 
 - Saving no longer stays blocked for the rest of a mission after a **concussion grenade**. Its script never tells the game the throw animation has finished, so saves and autosaves were refused until the mission ended. Any ability still "animating" after 30 seconds is now released.
 - Also covers Fathom's long-running abilities (`GA_EldritchEcho`, `GA_TheCall`), which block saving for as long as their effect lasts.

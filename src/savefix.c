@@ -28,7 +28,7 @@
 #include <string.h>
 #include "offsets.h"
 
-#define FIX_VERSION "1.0.0-beta.1"
+#define FIX_VERSION "1.0.0"
 
 // ---------------------------------------------------------------------------
 // version.dll forwarding

@@ -4,7 +4,7 @@ Fixes the bug where the game refuses to save, sometimes for the rest of a missio
 
 Made for Steam build **199049** (patch 1.2). It changes no game files and no save files: it is one small DLL that loads with the game and patches it in memory.
 
-**Beta.** It loads into the real game with every patch checked, but has not yet been played through a full mission. Reports welcome: open an issue and attach `SWZeroCompanyFix.log`.
+**Tested** in real play on a Steam Machine (Proton). Problem reports are welcome: open an issue and attach `SWZeroCompanyFix.log`.
 
 **Download:** the zip on the [Releases](https://github.com/marmite22/ZeroCompanySaveFix/releases) page. Each one is built by GitHub Actions from this source, not on anyone's PC. To check that, run `gh attestation verify ZeroCompanySaveFix-<version>.zip --repo marmite22/ZeroCompanySaveFix`.
 
@@ -79,7 +79,7 @@ At start-up the DLL checks every place it patches, byte for byte. After a game u
 - This releases the save block. It doesn't change the grenade's script, so the grenade still never sends "finished" to the other systems that listen for it (audio, voiceover, telemetry). It also doesn't fix the stutter or frozen animations people report with concussion grenades; whether those are connected hasn't been checked.
 - For Fathom's long-running abilities, saving is allowed after 30 seconds even though the effect is still running. The effect itself is game state that the save records; only the animation in progress isn't saved.
 - The 30 seconds count in real time. If you open the menu within 30 seconds of the ability that got stuck, Save may still be greyed out: close the menu and try again a little later.
-- Tested here: the patch logic, against a fake copy of the game's data structures (`test/test_logic.c`), and loading into the real game with every patch checked in the live process (`test/loadtest.c`). It has not yet been tested in a real mission.
+- Tested: in real play on a Steam Machine; the patch logic against a fake copy of the game's data structures (`test/test_logic.c`); and loading into the real game on Windows with every patch checked in the live process (`test/loadtest.c`).
 
 ## How it was found
 

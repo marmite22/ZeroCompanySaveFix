@@ -1,6 +1,6 @@
 # Builds version.dll and runs the logic test on every push and pull request.
 # Pushing a tag like v1.0.0 also packs the release zip, attests that GitHub built it
-# from this source, and publishes it as a GitHub release (marked pre-release while in beta).
+# from this source, and publishes it as a GitHub release (a pre-release if the tag has a dash, e.g. v1.1.0-beta.1).
 name: build
 
 on:
@@ -52,9 +52,11 @@ jobs:
         run: |
           cd release
           sha256sum *.zip > SHA256SUMS.txt
+          pre=""
+          case "$GITHUB_REF_NAME" in *-*) pre="--prerelease" ;; esac
           gh release create "$GITHUB_REF_NAME" *.zip SHA256SUMS.txt \
             --title "Zero Company save fix $GITHUB_REF_NAME" \
-            --notes-file ../CHANGELOG.md --prerelease
+            --notes-file ../CHANGELOG.md $pre
 
       - name: Upload build (non-release)
         if: "!startsWith(github.ref, 'refs/tags/v')"
