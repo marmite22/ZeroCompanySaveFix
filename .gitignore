@@ -1,0 +1,17 @@
+# build output (releases are built by GitHub Actions)
+dist/
+release/
+test/out/
+*.exe
+*.dll
+*.lib
+*.pdb
+
+# analysis by-products (derived from the game's files, not ours to share)
+tools/allsyms.tsv
+tools/ufuncs.txt
+tools/uclasses.txt
+tools/hashdb.pkl
+tools/assets/
+__pycache__/
+venv/

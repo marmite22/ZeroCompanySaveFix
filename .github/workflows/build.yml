@@ -1,0 +1,64 @@
+# Builds version.dll and runs the logic test on every push and pull request.
+# Pushing a tag like v1.0.0 also packs the release zip, attests that GitHub built it
+# from this source, and publishes it as a GitHub release (marked pre-release while in beta).
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: write       # create the release
+  id-token: write       # build attestation
+  attestations: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Zig 0.13.0
+        run: |
+          curl -sSfL -o zig.zip https://ziglang.org/download/0.13.0/zig-windows-x86_64-0.13.0.zip
+          echo "d859994725ef9402381e557c60bb57497215682e355204d754ee3df75ee3c158  zig.zip" | sha256sum -c -
+          unzip -q zig.zip -d "$RUNNER_TEMP"
+          echo "ZIG=$RUNNER_TEMP/zig-windows-x86_64-0.13.0/zig.exe" >> "$GITHUB_ENV"
+
+      - name: Build and run logic test
+        run: ./build.sh test
+
+      - name: Package
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: python package.py "${GITHUB_REF_NAME}"
+
+      - name: Attest build provenance
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            release/*.zip
+            dist/version.dll
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd release
+          sha256sum *.zip > SHA256SUMS.txt
+          gh release create "$GITHUB_REF_NAME" *.zip SHA256SUMS.txt \
+            --title "Zero Company save fix $GITHUB_REF_NAME" \
+            --notes-file ../CHANGELOG.md --prerelease
+
+      - name: Upload build (non-release)
+        if: "!startsWith(github.ref, 'refs/tags/v')"
+        uses: actions/upload-artifact@v4
+        with:
+          name: version-dll
+          path: dist/
